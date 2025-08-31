@@ -4,27 +4,22 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
-                // Exemplo: `git checkout`
+                script {
+                    dockerapp = docker.build("josemarcosrt/gruia-jenkins:${env.BUILD_ID}","-f ./src/Docker")
+                }
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the application...'
-                // Assume que o projeto tem um pom.xml
-                sh 'mvn clean package'
+                script {
+                    dockerapp.withRegistry('https://registry.hub.docker.com', 'dockerhub')
+                    dockerapp.push("latest")
+                    dockerapp.push("${env.BUILD_ID}")
+                }
             }
         }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Assume que os testes estão configurados com Maven
-                sh 'mvn test'
-            }
-        }
-
+        
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
