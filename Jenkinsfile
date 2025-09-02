@@ -5,27 +5,27 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    dockerapp = docker.build("josemarcosrt/gruia-jenkins:${env.BUILD_ID}","-f ./src/Docker")
+                    dockerapp = docker.build("josemarcosrt/guia-jenkins:${env.BUILD_ID}","-f ./src/Dockerfile")
                 }
             }
         }
 
-        stage('Build') {
+        stage('Push Docker Image') {
             steps {
                 script {
-                    dockerapp.withRegistry('https://registry.hub.docker.com', 'dockerhub')
-                    dockerapp.push("latest")
-                    dockerapp.push("${env.BUILD_ID}")
+                    dockerapp.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+                      dockerapp.push("latest")
+                      dockerapp.push("${env.BUILD_ID}")
+                    }    
                 }
             }
         }
         
-        stage('Deploy') {
+        stage('Deploy no Kubernetes') {
             steps {
-                echo 'Deploying the application...'
                 // Este é um passo de exemplo.
                 // Em um cenário real, você faria o deploy em um servidor, Docker ou Kubernetes.
-                sh 'echo "Deployment script here..."'
+                sh 'echo "Execultando o comando kubectl apply"'
             }
         }
     }
