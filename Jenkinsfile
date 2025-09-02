@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     dockerapp = docker.build("josemarcosrt/guia-jenkins:${env.BUILD_ID}","-f ./src/Dockerfile")
